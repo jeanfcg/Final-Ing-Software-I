@@ -2,27 +2,29 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Verify from "@/ldavis/components/Verify";
 import Link from "next/link";
-export default function Layout({ children, pagina ,time = 10}) {
+import Verify from "@/ldavis/components/Verify";
+export default function Layout({ children, pageTitle, time = 10 }) {
   const router = useRouter();
-  const [username, setUsername] = useState(0);
-  const [isOpen,setIsOpen] = useState(false)
-  useEffect(() => {
-    try{
-      getProfile();
+  const [username, setUsername] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-    } catch (error){
-      console.log(error)
-    }
+  useEffect(() => {
+    getProfile();
   }, []);
+
   const getProfile = async () => {
-    const res = await axios.get("/api/profile");
-    setUsername(res.data.username);
+    try {
+      const res = await axios.get("/api/profile");
+      setUsername(res.data.username);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   const logout = async () => {
     try {
-      const res = await axios.post("api/authentication/logout");
+      await axios.post("api/authentication/logout");
       router.push("/");
     } catch (err) {
       console.log(err);
@@ -30,36 +32,52 @@ export default function Layout({ children, pagina ,time = 10}) {
     }
   };
 
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
   return (
-      <div className="bg-light">
-        {username ? (
-            <div className="container p-4">
-              <div className="bg-warning p-3 mb-3 rounded d-flex justify-content-between align-items-center">
-                <div>
-                  <span className="home-link">
+    <div className="bg-light">
+      {username && (
+        <div className="container p-4">
+          <div className="bg-warning p-3 mb-3 rounded d-flex justify-content-between align-items-center">
+            <div>
+              <span className="home-link">
                 <Link href="/">Home</Link>
               </span>
-                  <Head>
-                    <title>{pagina}</title>
-                  </Head>
-                  <div className="fs-4 text-secondary">{username}</div>
-                </div>
-                <div>
-                  <Verify
-                      isOpen={isOpen}
-                      onRequestClose={() => setIsOpen(false)}
-                      onConfirm={logout}
-                      text={"Estas seguro de cerrar sesión?"}
-                  />
-                  <button onClick={() => setIsOpen(true)} className="btn btn-danger ms-2">Logout</button>
-                </div>
-              </div>
-              {children}
-              <div className="bg-warning p-3 mb-3 rounded d-flex justify-content-between align-items-center">
-                <h1>Footer</h1>
-              </div>
+              <Head>
+                <title>{pageTitle}</title>
+              </Head>
+              <div className="fs-4 text-secondary">{username}</div>
             </div>
-        ) : null}
-      </div>
+            <div>
+              <Verify
+                isOpen={isOpen}
+                onRequestClose={() => setIsOpen(false)}
+                onConfirm={logout}
+                text={"Estas seguro de cerrar sesión?"}
+              />
+              <button
+                onClick={() => setIsOpen(true)}
+                className="btn btn-danger ms-2"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+          {children}
+          <div className="bg-warning p-3 mb-3 rounded d-flex justify-content-between align-items-center">
+            <h1>Footer</h1>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
