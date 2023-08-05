@@ -222,4 +222,50 @@ class VoteElector {
 }
 
 ```
-### 2. b
+### 2. Open/Closed Principle (OCP)
+“Deberías ser capaz de extender el comportamiento de una clase, sin modificarla”. En otras palabras: las clases que usas deberían estar abiertas para poder extenderse y cerradas para modificarse.
+
+El constructor de la clase ElectorService se utiliza para recibir un parámetro llamado repository, que representa el repositorio de datos utilizado para interactuar con el almacenamiento. Al asignar este parámetro a la propiedad this.repository, la clase puede acceder al repositorio y realizar operaciones dentro de sus métodos, lo que la hace flexible para trabajar con diferentes tipos de repositorios sin modificar su código interno. 
+
+```javascript
+import ElectorRepository from "../../data/repository/ElectorRepository"; // Ruta relativa para ElectorRepository
+import Vote from "../../domain/models/Vote"; // Ruta relativa para Vote model
+
+class ElectorService {
+  // Constructor de la clase ElectorService.
+  // El constructor se ejecuta al crear una instancia de ElectorService.
+  // Recibe un parámetro "repository" que representa el repositorio de datos a utilizar.
+  constructor(repository) {
+    // Asigna el repositorio recibido como parámetro a la propiedad "repository".
+    this.repository = repository;
+  }
+
+  // Función para guardar un voto.
+  // Recibe el voto a guardar como parámetro.
+  async saveVote(vote) {
+    // Creamos una instancia del modelo Vote con los datos recibidos.
+    const instanceVote = new Vote(vote.idElector, vote.idPoliticalParty, vote.date);
+
+    try {
+      // Llamada al repositorio ElectorRepository para guardar el voto.
+      // Utiliza el repositorio asignado en el constructor para realizar la operación.
+      return await this.repository.saveVote(instanceVote);
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio.
+    }
+  }
+
+  // Función para obtener los partidos políticos.
+  async getPoliticalParty() {
+    try {
+      // Llamada al repositorio ElectorRepository para obtener los partidos políticos.
+      // Utiliza el repositorio asignado en el constructor para realizar la operación.
+      return await this.repository.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio.
+    }
+  }
+}
+
+export default ElectorService;
+```
