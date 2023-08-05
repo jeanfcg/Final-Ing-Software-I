@@ -1,48 +1,51 @@
+// Time.js
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import Head from "next/head";
 
-export default function Time({time = 10}) {
-    const router = useRouter();
-    const [exp, setExp] = useState(time);
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setExp((prevTime) => prevTime - 1);
-        }, 1000);
+export default function Time({ time = 10 }) {
+  const router = useRouter();
+  const [remainingTime, setRemainingTime] = useState(time);
 
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRemainingTime((prevTime) => prevTime - 1);
+    }, 1000);
 
-    useEffect(() => {
-        if (exp === 0) {
-            logout();
-            router.push("/");
-        }
-    }, [exp]);
-
-    const logout = async () => {
-        try {
-            const res = await axios.post("api/authentication/logout");
-            router.push("/");
-        } catch (err) {
-            console.log(err);
-            router.push("/");
-        }
+    return () => {
+      clearInterval(timer);
     };
-    const formatTime = (seconds) => {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainingSeconds = seconds % 60;
+  }, []);
 
-        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
-    };
+  useEffect(() => {
+    if (remainingTime === 0) {
+      logout();
+      router.push("/");
+    }
+  }, [remainingTime]);
 
-    return (
-        <div>
-            {formatTime(exp)}
-        </div>
-    );
+  const logout = async () => {
+    try {
+      await axios.post("api/authentication/logout");
+      router.push("/");
+    } catch (err) {
+      console.log(err);
+      router.push("/");
+    }
+  };
+
+  // Format the time in HH:mm:ss format
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
+  return <div>{formatTime(remainingTime)}</div>;
 }
