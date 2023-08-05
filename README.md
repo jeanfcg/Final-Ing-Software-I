@@ -193,3 +193,6 @@ class VoteElector {
 }
 
 ```
+## Principios SOLID
+### 1. a
+### 2. b
