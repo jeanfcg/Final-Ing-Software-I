@@ -65,7 +65,8 @@ export default async function handleVoto(req, res) {
 ```
 ### code-golf
 
-Tan pocas líneas de código como sea posible
+Tan pocas líneas de código como sea posible.
+
 Funciones flecha:las funciones de flecha proporcionan una forma concisa de escribir funciones en JavaScript.
 
 Ejemplo:
