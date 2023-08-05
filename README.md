@@ -265,8 +265,8 @@ El código tiene una indentación y un espaciado consistentes, lo que mejora la 
 /* ... codigo ... */
 }
 ```
-#PRINCIPIOS SOLID
-### 1. SOLID de Responsabilidad Única (SRP - Single Responsibility Principle):
+# Principios SOLID
+### 1. Responsabilidad Única (SRP - Single Responsibility Principle):
 Este principio establece que una clase o módulo debe tener una única responsabilidad o motivo para cambiar. En otras palabras, una clase debe tener una única razón para ser modificada. Si una clase tiene más de una responsabilidad, es más propensa a cambios y se vuelve difícil de mantener.
 La función **loginHandle** tiene una única responsabilidad: manejar la lógica de inicio de sesión y generar el token de autenticación.
 ### pages/login.js
