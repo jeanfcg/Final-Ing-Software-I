@@ -3,8 +3,7 @@ import PersonService from "@/ldavis/domain/services/PersonService";
 class AuthService {
     static async authenticate(username, password) {
         try{
-            const res = await PersonService.getPerson(username,password)
-            return res;
+            return await PersonService.getPerson(username,password)
         } catch (error){
             return error;
         }
