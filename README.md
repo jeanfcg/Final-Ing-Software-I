@@ -16,15 +16,17 @@ Estilo de programacion para el manejo de errores a traves de excepciones:
 
 Ejemplo
 ```javascript
-// Enviar el voto al backend
-  export default async function handlePartidoPolitico(req,res){
-    try{
-        const result = await VoteElector.getPoliticalParty();
-        return res.status(200).json(result);
-    }
-    catch (err){
-        res.status(500).json({error: err})
-    }
+export default async function handlePartidoPolitico(req, res) {
+  try {
+    // Obtenemos los datos del partido político desde el servicio VoteElector
+    const datosPartidoPolitico = await VoteElector.getPoliticalParty();
+
+    // Devolvemos los datos en la respuesta con estado 200 (éxito)
+    return res.status(200).json(datosPartidoPolitico);
+  } catch (err) {
+    // Manejamos los errores y proporcionamos un mensaje de error claro
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 }
 ```
 ### Persistent-tables (pages/api/services/voto.js)
