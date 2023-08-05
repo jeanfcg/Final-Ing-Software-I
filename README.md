@@ -29,7 +29,7 @@ export default async function handlePartidoPolitico(req, res) {
   }
 }
 ```
-### 2. Persistent-tables (pages/api/services/voto.js)
+### 2. Letterbox (pages/api/services/voto.js)
 
 Los datos de entrada del problema se modelan como entidades con relaciones entre ellas
 Los datos se colocan en tablas, con columnas que potencialmente hacen referencia cruzada a datos en otras tablas
