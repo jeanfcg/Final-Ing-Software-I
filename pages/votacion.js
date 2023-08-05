@@ -122,23 +122,14 @@ export default function Votacion() {
                   ))}
                 </tbody>
               </table>
-              <Success
-                show={isSuccess}
-                handleClose={logout}
-                isSuccess={success}
-              />
+              <Success show={isSuccess} handleClose={logout} isSuccess={success} />
               <Verify
                 isOpen={isOpen}
                 onRequestClose={() => setIsOpen(false)}
                 onConfirm={handleSubmit}
                 text={"Estas seguro de tu voto?"}
               />
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpen(true);
-                }}
-              >
+              <button onClick={(e) => { e.preventDefault(); setIsOpen(true); }}>
                 Votar
               </button>
             </form>
