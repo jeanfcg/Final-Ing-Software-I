@@ -11,21 +11,21 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ```
 ## Estilos de programación
 
-### Tantrum (Data/Repositorio/SendVoto.js)
+### Tantrum (pages/api/voteElector/politicalParty.js)
 Estilo de programacion para el manejo de errores a traves de excepciones:
 
 Ejemplo
 ```javascript
 // Enviar el voto al backend
-  static async Sufragar(voto) {
-    try {
-      const response = await axios.post('/api/services/voto', voto);
-      return response;
-    } catch (error) {
-      console.error('Error al enviar el voto:', error);
-      throw error;
+  export default async function handlePartidoPolitico(req,res){
+    try{
+        const result = await VoteElector.getPoliticalParty();
+        return res.status(200).json(result);
     }
-  }
+    catch (err){
+        res.status(500).json({error: err})
+    }
+}
 ```
 ### Persistent-tables (pages/api/services/voto.js)
 
