@@ -81,53 +81,84 @@ Ejemplo:
   };
 ```
 ## Convenciones de programación aplicados:
-### Names rules
-Uso de camelCase:(Page/Votacion.js)
+### Names rules 
+Uso de camelCase: (pages/votacion.js)
 ```javascript
 
+  // Estados
   const [partidos, setPartidos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [vote, setVote] = useState({
+    idElector: 0,
+    idPoliticalParty: 0,
+    date: new Date(),
+  });
 ```
 ### Manejo de Errores 
-//Manejo de excepeciones a través de try y catch : (Data/Repositorio/PartidosPoliticos.js)
+Manejo de excepeciones a través de try y catch : (services/VoteElector.js)
 ```javascript
-  static async getPartidos() {
+  
+class VoteElector {
+  // Función para enviar un voto
+  static async sendVote(vote) {
     try {
-      const response = await axios.get('/api/services/partido_politico');
-      return response;
+      // Llamada al servicio ElectorService para guardar el voto
+      return await ElectorService.saveVote(vote);
     } catch (error) {
-      console.error('Error al obtener resultados de la base de datos:', error);
-      throw error;
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
   }
+
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al servicio ElectorService para obtener los partidos políticos
+      return await ElectorService.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
+    }
+  }
+}
 ```
 ### Limit Line Length
-Linea de codigo menor que 80 caracteres (Page/Votacion.js)
+Linea de codigo menor que 80 caracteres (pages/votacion.js)
 ```javascript
-    <Success show={isSuccess} handleClose={logout} isSuccess={success} />
-    <Verify
-      isOpen={isOpen}
-      onRequestClose={() => setIsOpen(false)}
-      onConfirm={handleSubmit}
-      text={"Estas seguro de tu voto?"}
-    />
+     <Success show={isSuccess} handleClose={logout} isSuccess={success} />
+     <Verify
+          isOpen={isOpen}
+          onRequestClose={() => setIsOpen(false)}
+          onConfirm={handleSubmit}
+          text={"Estas seguro de tu voto?"}
+     />
+     <button onClick={(e) => { e.preventDefault(); setIsOpen(true); }}>
+          Votar
+     </button>
 ```
 ### Comments rules
-Comentarios (page/api/services/PartidoPolitico.js
+Comentarios (pages/api/voteElector/vote.js)
 ```javascript
-export default async function handlePartidoPolitico(req, res) {
+// Función para manejar una solicitud de voto
+export default async function handleVote(req, res) {
+  const vote = req.body; // Datos del voto desde el cuerpo de la solicitud
+
   try {
-    // Realiza una consulta a la base de datos para obtener los datos de partido_politico
-    const [result] = await pool.query("SELECT * FROM partido_politico;");
-    // Devuelve la respuesta con el resultado de la consulta como un objeto JSON
-    return res.status(200).json(result);
-  } catch (error) {
-    // Si ocurre un error en la consulta a la base de datos, se captura aquí
-    console.error("Error al obtener los datos de partido_politico:", error);
-    // Devuelve una respuesta con un código de estado 500 y un mensaje de error genérico para el cliente
-    res.status(500).json({ error: "Error en el servidor" });
+    // Intentamos enviar el voto al servicio VoteElector para su procesamiento
+    const result = await VoteElector.sendVote(vote);
+
+    // Verificamos el estado de la respuesta para dar la respuesta adecuada
+    if (result.status === 200) {
+      return res.status(200).json({ message: "Voto correcto" });
+    } else if (result.status === 401) {
+      return res.status(401).json({ message: "Usuario ya votó" });
+    }
+
+    // Si no se cumplieron las condiciones anteriores, respondemos con un error 500
+    return res.status(500).json({ message: "Ocurrió un error" });
+  } catch (err) {
+    // Si ocurre algún error durante el proceso, lo capturamos y respondemos con un error 500
+    res.status(500).json({ error: err }); 
   }
 }
 ```
