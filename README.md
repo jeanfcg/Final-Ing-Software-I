@@ -194,5 +194,32 @@ class VoteElector {
 
 ```
 ## Principios SOLID
-### 1. a
+### 1. Single Responsibility Principle (SRP)
+
+La clase VoteElector contiene dos funciones bien definidas y especializadas. La primera función, sendVote(vote), se encarga de enviar un voto utilizando el servicio ElectorService para su almacenamiento y maneja los posibles errores relacionados con esta operación. La segunda función, getPoliticalParty(), se encarga de obtener los partidos políticos utilizando el mismo servicio y maneja la lógica de consulta y los errores que puedan surgir. Ambas funciones cumplen con el principio de Single Responsibility (SRP) al tener una única responsabilidad y realizar una tarea específica.
+
+```javascript
+class VoteElector {
+  // Función para enviar un voto
+  static async sendVote(vote) {
+    try {
+      // Llamada al servicio ElectorService para guardar el voto
+      return await ElectorService.saveVote(vote);
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
+    }
+  }
+
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al servicio ElectorService para obtener los partidos políticos
+      return await ElectorService.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
+    }
+  }
+}
+
+```
 ### 2. b
