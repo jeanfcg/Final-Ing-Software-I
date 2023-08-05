@@ -11,7 +11,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ```
 ## Estilos de programación
 
-### Tantrum (pages/api/voteElector/politicalParty.js)
+### 1. Tantrum (pages/api/voteElector/politicalParty.js)
 Estilo de programacion para el manejo de errores a traves de excepciones:
 
 Ejemplo
@@ -29,7 +29,7 @@ export default async function handlePartidoPolitico(req, res) {
   }
 }
 ```
-### Persistent-tables (pages/api/services/voto.js)
+### 2. Persistent-tables (pages/api/services/voto.js)
 
 Los datos de entrada del problema se modelan como entidades con relaciones entre ellas
 Los datos se colocan en tablas, con columnas que potencialmente hacen referencia cruzada a datos en otras tablas
@@ -63,7 +63,7 @@ export default async function handleVoto(req, res) {
   }
 }
 ```
-### code-golf (pages/votacion.js)
+### 3. code-golf (pages/votacion.js)
 
 Tan pocas líneas de código como sea posible.
 
