@@ -265,3 +265,38 @@ El código tiene una indentación y un espaciado consistentes, lo que mejora la 
 /* ... codigo ... */
 }
 ```
+#PRINCIPIOS SOLID
+### 1. SOLID de Responsabilidad Única (SRP - Single Responsibility Principle):
+Este principio establece que una clase o módulo debe tener una única responsabilidad o motivo para cambiar. En otras palabras, una clase debe tener una única razón para ser modificada. Si una clase tiene más de una responsabilidad, es más propensa a cambios y se vuelve difícil de mantener.
+La función **loginHandle** tiene una única responsabilidad: manejar la lógica de inicio de sesión y generar el token de autenticación.
+### pages/login.js
+```javascript
+  export default async function loginHandle(req, res) {
+    const { username, password } = req.body;
+    const result = await AuthService.authenticate(username, password);
+    console.log(result)
+    if (result.status === 200) {
+ /* ... codigo ... */
+```
+### 2. Separación de Intereses (SoC - Separation of Concerns):
+Es un principio de diseño de software que aboga por dividir un programa en componentes o módulos más pequeños, cada uno enfocado en resolver una única preocupación o responsabilidad.
+El código se estructura en bloques bien definidos y separados. Por ejemplo, separamos la lógica de obtención de perfil (getProfile) y la lógica de cierre de sesión (logout) en funciones independientes.
+### components/Layout.js
+```javascript
+ const getProfile = async () => {
+     /* ... codigo ... */
+  };
+  const logout = async () => {
+     /* ... codigo ... */
+  };
+```
+### 3. Principio de Inversión de Dependencia (DIP - Dependency Inversion Principle):
+El componente Layout hace uso de la inyección de dependencias para obtener los datos de perfil del usuario. En lugar de tener una dependencia directa de axios y realizar la llamada HTTP directamente en el componente, se pasa una función (getProfile) que maneja la llamada HTTP como una dependencia. Esto permite que el componente sea más flexible y reutilizable, y facilita la prueba a través de la inyección de dependencias.
+## components/Layout.js
+```javascript
+
+const getProfile = async () => {
+    const res = await axios.get("/api/profile");
+    setUsername(res.data.username);
+  };
+```
