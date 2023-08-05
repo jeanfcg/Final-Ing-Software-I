@@ -123,22 +123,40 @@ Finalizar Token (cerrar sesion)
 ### 5. Clases y Métodos Estáticos
 En este estilo, se utiliza una clase para encapsular funcionalidades relacionadas en métodos estáticos que pueden ser invocados sin necesidad de crear una instancia de la clase.
 Uso de Clases: La clase UserRepository encapsula métodos relacionados con el acceso a la base de datos, en este caso, obtener usuarios.
-### /data/repositorio/UserRepository.js
+### /data/repositorio/PersonRepository.js
 ```javascript
-import axios from 'axios';
-class UserRepository {
-    static async getUsers(user) {
-        try {
-            const response = await axios.post('/api/services/login',user);
-            return response;
-        } catch (error) {
-            console.error('Error al obtener usuarios desde la base de datos:', error);
-            throw error;
+import {pool} from "@/ldavis/data/config/db";
+import Elector from "@/ldavis/domain/models/Elector";
+import Admin from "@/ldavis/domain/models/Admin";
+class PersonRepository {
+    static async getPerson(username,password) {
+        try{
+
+            const [result] = await pool.query(
+                "SELECT * FROM persona WHERE username = ? AND password = ?",
+                [username, password]
+            );
+            console.log(result);
+            let person;
+            if (result.length > 0) {
+                const [admin] = await pool.query("SELECT * FROM administrador WHERE id = ?", result[0].id);
+                if (admin.length === 0) {
+                    person = new Elector(result[0].id, result[0].name, result[0].lastName, result[0].username, "ldavis@unsa.edu.pe");
+                }else{
+                    person = new Admin(result[0].id, result[0].name, result[0].lastName, result[0].username, "Gerente de Sistemas");
+                }
+                return {status:200,person}
+            }
+            else{
+                return {status:401}
+            }
+        }catch (error){
+            return error;
         }
     }
-    // Otras operaciones de acceso a la base de datos utilizando Axios
 }
-export default UserRepository;
+export default PersonRepository;
+
 ```
 
 # Codificación Legible (Clean Code)
@@ -146,71 +164,39 @@ export default UserRepository;
 El código está organizado en bloques lógicos utilizando funciones y separando los elementos relacionados. Las funciones handleChange y handleSubmit están separadas para manejar diferentes aspectos de la lógica.
 ### /pages/login.js
 ```javascript
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: '',
+  });
+
   const handleChange = (e) => {
     setCredentials({
       ...credentials,
       [e.target.name]: e.target.value,
     });
   };
-
-  const router = useRouter();
-//Enviar por axios un objeto a api/services/login para autenticar
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await UserRepository.getUsers(credentials);
-    try{
-        if (res.status === 200) {
-          if (res.data.userType === 1) {
-            router.push("/votacion")
-          } else if (res.data.userType === 2) {
-            router.push("/resultado")
-          }
-          else{
-            router.push("/")
-          }
-        }
-    } catch (error){
-      console.log(error);
-    }
-  }
+/* ... codigo ... */
 ```
 ### 2. Manejo de errores
 Se utiliza un bloque try-catch para manejar errores potenciales al hacer la solicitud a la API. Los errores se registran en la consola para facilitar el diagnóstico.
 ### /pages/login.js
 ```javascript
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await UserRepository.getUsers(credentials);
-    try{
-        if (res.status === 200) {
-          if (res.data.userType === 1) {
-            router.push("/votacion")
-          } else if (res.data.userType === 2) {
-            router.push("/resultado")
-          }
-          else{
-            router.push("/")
-          }
-        }
-    } catch (error){
-      console.log(error);
-    }
+try{
+  const [result] = await pool.query(
+    "SELECT * FROM persona WHERE username = ? AND password = ?",
+      [username, password]
+    );
+  console.log(result);
+  /* ... codigo ... */
+  }catch (error){
+    return error;
   }
 ```
 ### 3. Configuración de Cookies Seguras
 Al configurar la cookie con la función serialize de la librería cookie, se establecen opciones de seguridad como httpOnly, secure, y sameSite. Estas opciones ayudan a proteger la cookie contra ataques como el acceso desde scripts no autorizados (httpOnly), aseguran que la cookie solo se envíe sobre conexiones seguras (secure), y controlan cuándo se envía la cookie al servidor (sameSite). Estas configuraciones mejoran la seguridad de la autenticación y previenen ataques como el robo de sesión.
 ### /pages/api/services/login.js
 ```javascript
-const expirationTime = Math.floor(Date.now() / 1000 + timeSession);
-            const token = jwt.sign(
-                {
-                    exp: expirationTime,
-                    id: userValidate.id,
-                    username: userValidate.username,
-                    userType: userValidate.userType,
-                },
-                "secret"
-            );
+            
             const serialized = serialize("MyTokenName", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -218,6 +204,7 @@ const expirationTime = Math.floor(Date.now() / 1000 + timeSession);
                 maxAge: expirationTime, // tiempo del token
                 path: "/",
             });
+/* ... codigo ... */
 ```
 ### 4. Uso de Fragmentos <></>
 El componente Layout utiliza un fragmento (<></>) para envolver los elementos del JSX, lo que permite devolver varios elementos sin agregar un nodo adicional al DOM.
@@ -240,17 +227,41 @@ El código tiene una indentación y un espaciado consistentes, lo que mejora la 
 ### En todos los archivos.js del proyecto
 
 ```javascript
-import axios from 'axios';
-class UserRepository {
-    static async getUsers(user) {
-        try {
-            const response = await axios.post('/api/services/login',user);
-            return response;
-        } catch (error) {
-            console.error('Error al obtener usuarios desde la base de datos:', error);
-            throw error;
-        }
-    }
+
+  return (
+      <div className="container mt-5">
+        <form>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+                name="username"
+                type="text"
+                className="form-control"
+                id="username"
+                placeholder="Enter username"
+                onChange={handleChange}
+                value={credentials.username}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+                name="password"
+                type="password"
+                className="form-control"
+                id="password"
+                placeholder="Enter password"
+                onChange={handleChange}
+                value={credentials.password}
+            />
+          </div>
+          <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
+            Login
+          </button>
+        </form>
+        <Link href={"/"}>Home</Link>
+      </div>
+  );
+/* ... codigo ... */
 }
-export default UserRepository;
 ```
