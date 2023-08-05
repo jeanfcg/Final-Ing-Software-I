@@ -1,22 +1,25 @@
-import ElectorService from "@/ldavis/domain/services/ElectorService";
+import ElectorService from "../../domain/services/ElectorService"; // Ruta relativa para ElectorService
 
 class VoteElector {
-    static async sendVote(vote) {
-        try{
-            const res = await ElectorService.saveVote(vote)
-            return res;
-        } catch (error){
-            return error;
-        }
+  // Función para enviar un voto
+  static async sendVote(vote) {
+    try {
+      // Llamada al servicio ElectorService para guardar el voto
+      return await ElectorService.saveVote(vote);
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
-    static  async getPoliticalParty(){
-        try{
-            const res = await ElectorService.getPoliticalParty()
-            return res;
-        } catch (error){
-            return error;
-        }
+  }
+
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al servicio ElectorService para obtener los partidos políticos
+      return await ElectorService.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
+  }
 }
 
 export default VoteElector;
