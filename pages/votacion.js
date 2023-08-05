@@ -43,7 +43,6 @@ export default function Votacion() {
       const res = await axios.post("api/authentication/logout");
       router.push("/");
     } catch (err) {
-      console.log(err);
       router.push("/");
     }
   };
