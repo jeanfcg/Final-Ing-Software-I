@@ -31,37 +31,41 @@ export default async function handlePartidoPolitico(req, res) {
 ```
 ### 2. Letterbox (pages/api/services/voto.js)
 
-Los datos de entrada del problema se modelan como entidades con relaciones entre ellas
-Los datos se colocan en tablas, con columnas que potencialmente hacen referencia cruzada a datos en otras tablas
-Existencia de un motor de consulta relacional
-El problema se resuelve emitiendo consultas sobre los datos tabulares.
+Este estilo de programación se basa en la idea de que cada entidad en el sistema (la "cápsula") es independiente y solo se comunica mediante mensajes. Es una forma de lograr un acoplamiento más bajo entre los componentes de un sistema y promueve la modularidad y la escalabilidad.
+
+El código emplea la clase ElectorService como una cápsula de datos para guardar votos y obtener partidos políticos. Cada función en ElectorService tiene una única responsabilidad de recibir y despachar mensajes. La comunicación con el repositorio ElectorRepository es a través de mensajes usando llamadas await. Además, el código envía mensajes al repositorio para guardar votos o obtener partidos
 
 Ejemplo: 
 ```javascript
-export default async function handleVoto(req, res) {
-  // Desestructurar los valores recibidos desde el cuerpo de la solicitud
-  const { id_elector, id_partido, fecha } = req.body;
-  
-  try {
-    // Buscar si el usuario ya ha votado previamente
-    const [find] = await pool.query("SELECT * FROM votos WHERE id_elector = ?", [id_elector]);
-    
-    // Si se encuentra algún voto registrado, devolver un mensaje de error
-    if (find.length > 0) {
-      return res.status(401).json({ message: "Usuario ya votó" });
+import ElectorRepository from "../../data/repository/ElectorRepository"; // Ruta relativa para ElectorRepository
+import Vote from "../../domain/models/Vote"; // Ruta relativa para Vote model
+
+class ElectorService {
+  // Función para guardar un voto
+  static async saveVote(vote) {
+    // Creamos una instancia del modelo Vote con los datos recibidos
+    const instanceVote = new Vote(vote.idElector, vote.idPoliticalParty, vote.date);
+
+    try {
+      // Llamada al repositorio ElectorRepository para guardar el voto
+      return await ElectorRepository.saveVote(instanceVote);
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio
     }
-    
-    // Insertar el voto en la base de datos
-    const resp = await pool.query("INSERT INTO votos VALUES (?, ?, ?);", [id_elector, id_partido, fecha]);
-    // Devolver una respuesta con un código de estado 200 y el resultado de la inserción
-    return res.status(200).json(resp);
-  } catch (error) {
-    // Si ocurre un error en la consulta a la base de datos, se captura aquí
-    console.error("Error al insertar el voto en la base de datos:", error);
-    // Devolver una respuesta con un código de estado 500 y un mensaje de error genérico para el cliente
-    res.status(500).json({ error: "Error en el servidor" });
+  }
+
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al repositorio ElectorRepository para obtener los partidos políticos
+      return await ElectorRepository.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio
+    }
   }
 }
+
+export default ElectorService;
 ```
 ### 3. code-golf (pages/votacion.js)
 
