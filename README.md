@@ -63,22 +63,22 @@ export default async function handleVoto(req, res) {
   }
 }
 ```
-### code-golf
+### code-golf (pages/votacion.js)
 
 Tan pocas líneas de código como sea posible.
 
-Funciones flecha:las funciones de flecha proporcionan una forma concisa de escribir funciones en JavaScript.
+Las funciones de flecha proporcionan una forma concisa de escribir funciones en JavaScript.
 
 Ejemplo:
 ```javascript
-const getProfile = async () => {
+// Obtiene el perfil del usuario desde el backend
+  const getProfile = async () => {
     const res = await axios.get("/api/profile");
-    setVoto({
-      ...voto,
-      id_elector: res.data.id,
+    setVote({
+      ...vote,
+      idElector: res.data.id,
     });
   };
-
 ```
 ## Convenciones de programación aplicados:
 ### Names rules
