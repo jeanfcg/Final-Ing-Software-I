@@ -1,7 +1,7 @@
 // Archivo Resultado.js
 import React, { useEffect, useState } from "react";
-import Layout from "@/ldavis/Componentes/Layout";
-import ResultadoEleccion from "@/ldavis/Data/Repositorio/ResultadoEleccion";
+import Layout from "../components/layout";
+import resultadoEleccion from "../data/repository/resultadoEleccion";
 
 // Nuevo componente para la tabla de resultados
 function ResultadoTable({ resultado }) {
@@ -46,7 +46,7 @@ export default function Resultado() {
 
   const getResultados = async () => {
     try {
-      const res = await ResultadoEleccion.getResultados();
+      const res = await resultadoEleccion.getResultados();
       console.log(res.data);
       setResultado(res.data[0]);
     } catch (error) {

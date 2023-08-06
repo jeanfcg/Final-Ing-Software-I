@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-class ResultadoService {
+class resultadoService {
   static async getResultados() {
     try {
       const response = await axios.get('/api/services/resultado');
@@ -12,4 +12,4 @@ class ResultadoService {
   }
 }
 
-export default ResultadoService;
+export default resultadoService;

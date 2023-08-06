@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Verify from "@/ldavis/Componentes/Verify";
-import ProfileService from "./profileService";
-import HttpService from "./httpService";
+import verify from "./verify";
+import profileService from "./profileService";
+import httpService from "./httpService";
 
 export default function Layout({ children, pagina, time = 10 }) 
 {
@@ -19,15 +19,15 @@ export default function Layout({ children, pagina, time = 10 })
   // Go Forth (Termina Aquí)
 
   const loadProfile = async () => {
-    // Obtenemos el perfil del usuario utilizando ProfileService
-    const username = await ProfileService.getProfile();
+    // Obtenemos el perfil del usuario utilizando profileService
+    const username = await profileService.getProfile();
     setUsername(username);
   };
 
   const logout = async () => {
     try {
       // Hacemos una solicitud POST a la API para cerrar la sesión del usuario.
-      const res = await HttpService.post("api/auth/logout"); // Utilizamos HttpService en lugar de axios
+      const res = await httpService.post("api/auth/logout"); // Utilizamos httpService en lugar de axios
       router.push("/"); // Redirigimos a la página de inicio después de cerrar sesión exitosamente.
     } 
     catch (err) 
@@ -46,7 +46,7 @@ export default function Layout({ children, pagina, time = 10 })
       <div>
         <div>{username}</div>
       </div>
-      <Verify
+      <verify
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         onConfirm={logout}

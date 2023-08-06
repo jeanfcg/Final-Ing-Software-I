@@ -1,6 +1,6 @@
 import axios from "axios";
 
-class ProfileService {
+class profileService {
   static async getProfile() {
     try 
     {
@@ -14,4 +14,4 @@ class ProfileService {
   }
 }
 
-export default ProfileService;
+export default profileService;

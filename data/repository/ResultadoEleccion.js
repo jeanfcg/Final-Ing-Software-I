@@ -1,14 +1,14 @@
-import ResultadoService from './resultadoService';
-import UserService from './userService';
+import resultadoService from './resultadoService';
+import userService from './userService';
 
-class ResultadoEleccion {
+class resultadoEleccion {
   static async getResultados() {
-    return ResultadoService.getResultados();
+    return resultadoService.getResultados();
   }
 
   static async getUserById(id) {
-    return UserService.getUserById(id);
+    return userService.getUserById(id);
   }
 }
 
-export default ResultadoEleccion;
+export default resultadoEleccion;

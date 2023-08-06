@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-class UserService {
+class userService {
   static async getUserById(id) {
     try {
       const response = await axios.get(`/api/users/${id}`);
@@ -12,4 +12,4 @@ class UserService {
   }
 }
 
-export default UserService;
+export default userService;

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-class HttpService {
+class httpService {
   static async get(url) {
     return await axios.get(url);
   }
@@ -10,4 +10,4 @@ class HttpService {
   }
 }
 
-export default HttpService;
+export default httpService;
