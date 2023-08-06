@@ -13,7 +13,7 @@ Implementación de estilos de programación:
 ## **En resultado.js**
 
 * Sliding Window: Implementado en la declaración del estado resultado (línea 6) utilizando el Hook useState, estableciendo su valor inicial como un array vacío.
-```bash
+```js
     // Sliding Window (iniciando)
     const [resultado, setResultado] = useState([]);
     // Sliding Window (terminando)
@@ -21,7 +21,7 @@ Implementación de estilos de programación:
 
 * Quarantine: Aplicamos este estilo en la función getResultados (líneas 15 a 25) al usar try-catch para capturar posibles errores al obtener los resultados. Si ocurre un error, establecemos el estado resultado como un array vacío para evitar problemas en la representación de la tabla.
 
-```bash
+```js
   // Quarantine (iniciando)
   const getResultados = async () => {
     try {
@@ -39,7 +39,7 @@ Implementación de estilos de programación:
 
 * Map Reduce:
 Lo implementamos en el bloque de retorno, en la línea 44 , utilizando el método map para generar dinámicamente las filas de la tabla basándonos en los datos del array resultado.
-```bash
+```js
     <tbody>
             {resultado.map((e, index) => { // Map-Reduce (iniciando)
               return (
@@ -64,7 +64,7 @@ Lo implementamos en el bloque de retorno, en la línea 44 , utilizando el métod
 
 * Cookbook: Lo aplicamos en el bloque de retorno, entre las líneas 29 y 70, al generar la estructura de la tabla y sus elementos siguiendo un patrón predefinido y común en este tipo de componentes.
 
-```bash
+```js
   return (
     // Cookbook (iniciando)
     <Layout pagina="Resultado">
@@ -111,7 +111,7 @@ Lo implementamos en el bloque de retorno, en la línea 44 , utilizando el métod
 
 * RESTful: Este estilo se aplica en las funciones getResultados y getUserById. La implementación del estilo es en cómo las funciones están diseñadas para realizar operaciones de acceso a recursos a través de una API RESTful. La función getResultados realiza una solicitud HTTP GET a la ruta `/api/services/resultado`, mientras que getUserById realiza una solicitud HTTP GET a la ruta `/api/users/${id}`.
 
-```bash
+```js
 // RESTful (Inicia Aquí)
 import axios from 'axios';
 class resultadoEleccion {
@@ -143,7 +143,7 @@ export default resultadoEleccion;
 
 * Go Forth: He implementado este estilo utilizando el efecto de lado (useEffect). En la línea 12, el efecto está configurado para llamar a la función getProfile cuando el componente se monta (porque el arreglo de dependencias está vacío). De esta manera, el código avanza y ejecuta la obtención del perfil del usuario en el momento adecuado.
 
-```bash
+```js
     // Go Forth (Aquí inicia)
     useEffect(() => {
         getProfile();
@@ -154,7 +154,7 @@ export default resultadoEleccion;
 
 * Map-Reduce: He aplicado este estilo dentro de la función getProfile. El bloque de código que realiza la solicitud HTTP utilizando Axios representa el enfoque Map-Reduce. Primero, intentamos obtener el perfil del usuario mediante una solicitud HTTP (Map), y luego, en caso de éxito, actualizamos el estado username con los datos obtenidos (Reduce).
 
-```bash
+```js
     const getProfile = async () => {
         // Map-Reduce (Aquí inicia)
         try {
@@ -171,7 +171,7 @@ export default resultadoEleccion;
 ## **En verify.js**
 * Actors: Hemos aplicado este estilo en el componente verify. El enfoque de estilo de actores involucra la comunicación y cooperación entre componentes independientes (actores) para lograr una tarea común. En este caso, el componente verify es un actor que funciona de manera independiente y recibe mensajes (propiedades) desde otros componentes.
 
-```bash
+```js
 const verify = ({ isOpen, onRequestClose, onConfirm, text }) => {
     return (
         // Estilo 29: Actors (iniciando)
@@ -213,7 +213,7 @@ Implementación de prácticas de codificación legible:
 ## **En resultado.js**
 
 * Uso de importaciones Claras y ordenadas:
-```bash
+```js
 // Uso de importaciones Claras y ordenadas
 import React, { useEffect, useState } from "react";
 import Layout from "../componentes/layout";
@@ -221,7 +221,7 @@ import resultadoEleccion from "../data/repositorio/resultadoEleccion";
 ```
 
 * Comentarios para explicar bloques de código importantes:
-```bash
+```js
   // useEffect para obtener los resultados al montar el componente
   useEffect(() => {
     getResultados();
@@ -243,7 +243,7 @@ import resultadoEleccion from "../data/repositorio/resultadoEleccion";
 ```
 * No se puso comentarios no necesarios
 * Consistent Indentation Estilo 2
-```bash
+```js
   const getResultados = async () => 
   {
     try 
@@ -263,7 +263,7 @@ import resultadoEleccion from "../data/repositorio/resultadoEleccion";
 ## **En resultadoEleccion.js**
 
 * Comentarios descriptivos
-```bash
+```js
 // Clase para manejar las operaciones relacionadas con los resultados de la elección
 class resultadoEleccion {
     // Obtiene todos los resultados de la elección
@@ -271,12 +271,12 @@ class resultadoEleccion {
         try {...
 ```
 * Comandos con mensajes claros de entender.
-```bash
+```js
 console.error("Error al obtener resultados de la base de datos:", error);
 ```
 * No se puso comentarios no necesarios
 * Consistent Indentation Estilo 2
-```bash
+```js
 class resultadoEleccion 
 {
     // Obtiene todos los resultados de la elección
@@ -299,7 +299,7 @@ class resultadoEleccion
 ## **En layout.js**
 
 * Comentarios descriptivos
-```bash
+```js
   // Efecto secundario para obtener el perfil del usuario al montar el componente.
   useEffect(() => {
     getProfile();
@@ -324,7 +324,7 @@ class resultadoEleccion
 ```
 * No se puso comentarios no necesarios
 * Consistent Indentation Estilo 2
-```bash
+```js
 const getProfile = async () => 
   {
     // Map-Reduce (Aquí inicia)
@@ -346,7 +346,7 @@ const getProfile = async () =>
 ## **En verify.js**
 
 * Comentarios descriptivos
-```bash
+```js
         // Componente Modal para confirmar acciones
         <Modal
             isOpen={isOpen}
