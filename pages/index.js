@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import axios from 'axios';
 
-// Single Responsibility Principle: Create a CandidateRow component
+// Single Responsibility Principle: Crear el componente CandidateRow
 const CandidateRow = ({ candidate }) => {
   const { nombre, apellido, cargo, nombre_partido } = candidate;
   return (
@@ -23,7 +23,7 @@ const CandidateRow = ({ candidate }) => {
   );
 };
 
-// Open/Closed Principle: The Table component can be extended and customized with props.
+// Open/Closed Principle: El componente Table se puede ampliar y personalizar con accesorios.
 const Table = ({ data }) => {
   return (
     <table className="table mt-4">
@@ -61,7 +61,7 @@ export default function IndexPage() {
       setCandidatos((prevCandidatos) => [...prevCandidatos, ...data]);
     } catch (error) {
       console.error("Error fetching candidates:", error);
-      // TODO: Handle the error state, show an error message, or retry the API call.
+      // TODO: Maneje el estado de error, muestre un mensaje de error o vuelva a intentar la llamada a la API.
     }
   };
 
