@@ -1,627 +1,269 @@
-# MENÚ A SEGUIR:
-* 1ERA PARTE: LAB 9 - Estilos de Programación.
-* 2DA PARTE: LAB 10 -  Prácticas de Codificación Legible.
-* 3RA PARTE: LAB 11 -  Principios SOLID
-
-
-# **------------------------- LAB 9: ESTILOS DE PROGRAMACIÓN -------------------------------**
-> Alumno: Nelzon Jorge Apaza Apaza
-> Curso Ingeniería de software
-
-Implementación de estilos de programación:
-
-## **En resultado.js**
-
-* Sliding Window: Implementado en la declaración del estado resultado (línea 6) utilizando el Hook useState, estableciendo su valor inicial como un array vacío.
-```js
-    // Sliding Window (iniciando)
-    const [resultado, setResultado] = useState([]);
-    // Sliding Window (terminando)
+## Trabajo encargado:
+```bash
+- pages/
+      -api/voteElector/politicalParty.js
+      -api/voteElector/vote.js
+      -votacion.js
+- services/VoteElector.js
+- domain/services/ElectorService.js
 ```
+## Estilos de programación
 
-* Quarantine: Aplicamos este estilo en la función getResultados (líneas 15 a 25) al usar try-catch para capturar posibles errores al obtener los resultados. Si ocurre un error, establecemos el estado resultado como un array vacío para evitar problemas en la representación de la tabla.
+### 1. Tantrum (pages/api/voteElector/politicalParty.js)
+Estilo de programacion para el manejo de errores a traves de excepciones:
 
-```js
-  // Quarantine (iniciando)
-  const getResultados = async () => {
+Ejemplo
+```javascript
+export default async function handlePartidoPolitico(req, res) {
+  try {
+    // Obtenemos los datos del partido político desde el servicio VoteElector
+    const datosPartidoPolitico = await VoteElector.getPoliticalParty();
+
+    // Devolvemos los datos en la respuesta con estado 200 (éxito)
+    return res.status(200).json(datosPartidoPolitico);
+  } catch (err) {
+    // Manejamos los errores y proporcionamos un mensaje de error claro
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+```
+### 2. Letterbox (domain/services/ElectorService.js)
+
+Este estilo de programación se basa en la idea de que cada entidad en el sistema (la "cápsula") es independiente y solo se comunica mediante mensajes. Es una forma de lograr un acoplamiento más bajo entre los componentes de un sistema y promueve la modularidad y la escalabilidad.
+
+El código emplea la clase ElectorService como una cápsula de datos para guardar votos y obtener partidos políticos. Cada función en ElectorService tiene una única responsabilidad de recibir y despachar mensajes. La comunicación con el repositorio ElectorRepository es a través de mensajes usando llamadas await. Además, el código envía mensajes al repositorio para guardar votos o obtener partidos
+
+Ejemplo: 
+```javascript
+import ElectorRepository from "../../data/repository/ElectorRepository"; // Ruta relativa para ElectorRepository
+import Vote from "../../domain/models/Vote"; // Ruta relativa para Vote model
+
+class ElectorService {
+  // Función para guardar un voto
+  static async saveVote(vote) {
+    // Creamos una instancia del modelo Vote con los datos recibidos
+    const instanceVote = new Vote(vote.idElector, vote.idPoliticalParty, vote.date);
+
     try {
-      const res = await resultadoEleccion.getResultados();
-      console.log(res.data);
-      setResultado(res.data[0]);
+      // Llamada al repositorio ElectorRepository para guardar el voto
+      return await ElectorRepository.saveVote(instanceVote);
     } catch (error) {
-      console.error("Error al obtener resultados:", error);
-      // Aquí aplicamos el Quarantine al encapsular el manejo del error.
-      setResultado([]);
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio
     }
-  };
-  // Quarantine (terminando)
-```
+  }
 
-* Map Reduce:
-Lo implementamos en el bloque de retorno, en la línea 44 , utilizando el método map para generar dinámicamente las filas de la tabla basándonos en los datos del array resultado.
-```js
-    <tbody>
-            {resultado.map((e, index) => { // Map-Reduce (iniciando)
-              return (
-                <tr key={e.id_partido}>
-                  <td>{e.id_partido}</td>
-                  <td>{e.nombre_partido}</td>
-                  <td>{e.nombre + " " + e.apellido}</td>
-                  <td>{e.nro_votos}</td>
-                  <td>
-                    <img
-                      src={"/partidos/" + e.nombre_partido + ".png"}
-                      alt={"Cargando"}
-                      style={{ width: "100px", height: "100px" }}
-                    />
-                  </td>
-                </tr>
-              );
-              // Map-Reduce (terminando)
-            })} 
-    </tbody>
-```
-
-* Cookbook: Lo aplicamos en el bloque de retorno, entre las líneas 29 y 70, al generar la estructura de la tabla y sus elementos siguiendo un patrón predefinido y común en este tipo de componentes.
-
-```js
-  return (
-    // Cookbook (iniciando)
-    <Layout pagina="Resultado">
-      {resultado.length > 0 ? (
-        <table className="table mt-4">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Partido</th>
-              <th>Presidente</th>
-              <th>Nro_Votos</th>
-              <th>Logo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {resultado.map((e, index) => {
-              return (
-                <tr key={e.id_partido}>
-                  <td>{e.id_partido}</td>
-                  <td>{e.nombre_partido}</td>
-                  <td>{e.nombre + " " + e.apellido}</td>
-                  <td>{e.nro_votos}</td>
-                  <td>
-                    <img
-                      src={"/partidos/" + e.nombre_partido + ".png"}
-                      alt={"Cargando"}
-                      style={{ width: "100px", height: "100px" }}
-                    />
-                  </td>
-                </tr>
-              );
-            })} 
-          </tbody>
-        </table>
-      ) : (
-        <div>Vacio</div>
-      )}
-    </Layout>
-    // Cookbook (terminando)
-  );
-```
-
-## **En resultadoEleccion.js**
-
-* RESTful: Este estilo se aplica en las funciones getResultados y getUserById. La implementación del estilo es en cómo las funciones están diseñadas para realizar operaciones de acceso a recursos a través de una API RESTful. La función getResultados realiza una solicitud HTTP GET a la ruta `/api/services/resultado`, mientras que getUserById realiza una solicitud HTTP GET a la ruta `/api/users/${id}`.
-
-```js
-// RESTful (Inicia Aquí)
-import axios from 'axios';
-class resultadoEleccion {
-    static async getResultados() {
-        try {
-            // RESTful (continuando)
-            const response = await axios.get('/api/services/resultado');
-            return response;
-        } catch (error) {
-            console.error('Error al obtener resultados base de datos:', error);
-            throw error;
-        }
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al repositorio ElectorRepository para obtener los partidos políticos
+      return await ElectorRepository.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio
     }
-    static async getUserById(id) {
-        try {
-            // RESTful (continuando)
-            const response = await axios.get(`/api/users/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Error al obtener el usuario con ID ${id}:`, error);
-            throw error;
-        }
-    }
+  }
 }
 
-export default resultadoEleccion;
+export default ElectorService;
 ```
-## **En layout.js**
+### 3. code-golf (pages/votacion.js)
 
-* Go Forth: He implementado este estilo utilizando el efecto de lado (useEffect). En la línea 12, el efecto está configurado para llamar a la función getProfile cuando el componente se monta (porque el arreglo de dependencias está vacío). De esta manera, el código avanza y ejecuta la obtención del perfil del usuario en el momento adecuado.
+Tan pocas líneas de código como sea posible.
 
-```js
-    // Go Forth (Aquí inicia)
-    useEffect(() => {
-        getProfile();
-    }, []);
-    // Go Forth (Termina Aquí)
+Las funciones de flecha proporcionan una forma concisa de escribir funciones en JavaScript.
+
+Ejemplo:
+```javascript
+// Obtiene el perfil del usuario desde el backend
+  const getProfile = async () => {
+    const res = await axios.get("/api/profile");
+    setVote({
+      ...vote,
+      idElector: res.data.id,
+    });
+  };
 ```
+## Convenciones de programación aplicados:
+### Names rules 
+Uso de camelCase: (pages/votacion.js)
+```javascript
 
-
-* Map-Reduce: He aplicado este estilo dentro de la función getProfile. El bloque de código que realiza la solicitud HTTP utilizando Axios representa el enfoque Map-Reduce. Primero, intentamos obtener el perfil del usuario mediante una solicitud HTTP (Map), y luego, en caso de éxito, actualizamos el estado username con los datos obtenidos (Reduce).
-
-```js
-    const getProfile = async () => {
-        // Map-Reduce (Aquí inicia)
-        try {
-            const res = await axios.get("/api/profile");
-            setUsername(res.data.username);
-        } catch (error) {
-            console.error("Error al obtener el perfil del usuario:", error);
-            setUsername(0);
-        }
-        // Map-Reduce (Termina Aquí)
-    };
+  // Estados
+  const [partidos, setPartidos] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [vote, setVote] = useState({
+    idElector: 0,
+    idPoliticalParty: 0,
+    date: new Date(),
+  });
 ```
-
-## **En verify.js**
-* Actors: Hemos aplicado este estilo en el componente verify. El enfoque de estilo de actores involucra la comunicación y cooperación entre componentes independientes (actores) para lograr una tarea común. En este caso, el componente verify es un actor que funciona de manera independiente y recibe mensajes (propiedades) desde otros componentes.
-
-```js
-const verify = ({ isOpen, onRequestClose, onConfirm, text }) => {
-    return (
-        // Estilo 29: Actors (iniciando)
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onRequestClose}
-            contentLabel="Confirmación"
-            ariaHideApp={false}
-            className="modal-dialog"
-        >
-            <div className="modal-content container ">
-                <div className="modal-header">
-                    <h5 className="modal-title">{text}</h5>
-                    <button type="button" className="close" onClick={onRequestClose}>
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div className="modal-footer">
-                    <button type="button" className="btn btn-primary" onClick={onConfirm}>
-                        Sí
-                    </button>
-                    <button type="button" className="btn btn-secondary" onClick={onRequestClose}>
-                        No
-                    </button>
-                </div>
-            </div>
-        </Modal>
-        // Estilo 29: Actors (terminando)
-    );
-};
-```
-
-# **------------------------------- LAB 10:  Prácticas de Codificación Legible -------------------------------**
-> Alumno: Nelzon Jorge Apaza Apaza
-> Curso Ingeniería de software
-
-Implementación de prácticas de codificación legible:
-
-## **En resultado.js**
-
-* Uso de importaciones Claras y ordenadas:
-```js
-// Uso de importaciones Claras y ordenadas
-import React, { useEffect, useState } from "react";
-import Layout from "../componentes/layout";
-import resultadoEleccion from "../data/repositorio/resultadoEleccion";
-```
-
-* Comentarios para explicar bloques de código importantes:
-```js
-  // useEffect para obtener los resultados al montar el componente
-  useEffect(() => {
-    getResultados();
-  }, []);
-
-  // Función getResultados  asincrónica para obtener resultados
-  const getResultados = async () => {
+### Manejo de Errores 
+Manejo de excepeciones a través de try y catch : (services/VoteElector.js)
+```javascript
+  
+class VoteElector {
+  // Función para enviar un voto
+  static async sendVote(vote) {
     try {
-      const res = await resultadoEleccion.getResultados();
-      console.log(res.data);
-      setResultado(res.data[0]);
+      // Llamada al servicio ElectorService para guardar el voto
+      return await ElectorService.saveVote(vote);
     } catch (error) {
-      console.error("Error al obtener resultados:", error);
-      // Aquí aplicamos el Quarantine al encapsular el manejo del error.
-      setResultado([]);
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
-  };
+  }
 
-```
-* No se puso comentarios no necesarios
-* Consistent Indentation Estilo 2
-```js
-  const getResultados = async () => 
-  {
-    try 
-    {
-      const res = await resultadoEleccion.getResultados();
-      console.log(res.data);
-      setResultado(res.data[0]);
-    } catch (error) 
-    {
-      console.error("Error al obtener resultados de la base de datos:", error);
-      // Aquí aplicamos el Quarantine al encapsular el manejo del error.
-      setResultado([]);
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al servicio ElectorService para obtener los partidos políticos
+      return await ElectorService.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
-  };
+  }
+}
 ```
-
-## **En resultadoEleccion.js**
-
-* Comentarios descriptivos
-```js
-// Clase para manejar las operaciones relacionadas con los resultados de la elección
-class resultadoEleccion {
-    // Obtiene todos los resultados de la elección
-    static async getResultados() {
-        try {...
+### Limit Line Length
+Linea de codigo menor que 80 caracteres (pages/votacion.js)
+```javascript
+     <Success show={isSuccess} handleClose={logout} isSuccess={success} />
+     <Verify
+          isOpen={isOpen}
+          onRequestClose={() => setIsOpen(false)}
+          onConfirm={handleSubmit}
+          text={"Estas seguro de tu voto?"}
+     />
+     <button onClick={(e) => { e.preventDefault(); setIsOpen(true); }}>
+          Votar
+     </button>
 ```
-* Comandos con mensajes claros de entender.
-```js
-console.error("Error al obtener resultados de la base de datos:", error);
-```
-* No se puso comentarios no necesarios
-* Consistent Indentation Estilo 2
-```js
-class resultadoEleccion 
-{
-    // Obtiene todos los resultados de la elección
-    static async getResultados() 
-    {
-        try 
-        {
-            // RESTful (continuando)
-            const response = await axios.get('/api/services/resultado');
-            return response;
-        } 
-        catch (error) 
-        {
-            console.error('Error al obtener resultados base de datos:', error);
-            throw error;
-        }
-    }....
-```
-
-## **En layout.js**
-
-* Comentarios descriptivos
-```js
-  // Efecto secundario para obtener el perfil del usuario al montar el componente.
-  useEffect(() => {
-    getProfile();
-  }, []);
+### Comments rules
+Comentarios (pages/api/voteElector/vote.js)
+```javascript
+// Función para manejar una solicitud de voto
+export default async function handleVote(req, res) {
+  const vote = req.body; // Datos del voto desde el cuerpo de la solicitud
 
   try {
-      // Hacemos una solicitud GET a la API para obtener el perfil del usuario.
-      const res = await axios.get("/api/profile");
-      ....
+    // Intentamos enviar el voto al servicio VoteElector para su procesamiento
+    const result = await VoteElector.sendVote(vote);
 
-  const logout = async () => {
+    // Verificamos el estado de la respuesta para dar la respuesta adecuada
+    if (result.status === 200) {
+      return res.status(200).json({ message: "Voto correcto" });
+    } else if (result.status === 401) {
+      return res.status(401).json({ message: "Usuario ya votó" });
+    }
+
+    // Si no se cumplieron las condiciones anteriores, respondemos con un error 500
+    return res.status(500).json({ message: "Ocurrió un error" });
+  } catch (err) {
+    // Si ocurre algún error durante el proceso, lo capturamos y respondemos con un error 500
+    res.status(500).json({ error: err }); 
+  }
+}
+```
+### Functions rules
+La regla de funciones en Clean Code promueve funciones pequeñas, cohesivas y con nombres descriptivos que hagan una sola cosa sin efectos secundarios. Se debe evitar el uso de argumentos de bandera y, en su lugar, dividir funciones en métodos más pequeños y especializados para mantener el código limpio y legible. Esto conduce a un código más claro, modular y fácil de mantener.
+
+```javascript
+class VoteElector {
+  // Función para enviar un voto
+  static async sendVote(vote) {
     try {
-      // Hacemos una solicitud POST a la API para cerrar la sesión del usuario.
-      const res = await axios.post("api/auth/logout");
-      router.push("/"); // Redirigimos a la página de inicio después de cerrar sesión exitosamente.
-    } catch (err) {
-      console.log(err);
-      router.push("/"); // En caso de error, también redirigimos a la página de inicio.
+      // Llamada al servicio ElectorService para guardar el voto
+      return await ElectorService.saveVote(vote);
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
-  };
+  }
 
-```
-* No se puso comentarios no necesarios
-* Consistent Indentation Estilo 2
-```js
-const getProfile = async () => 
-  {
-    // Map-Reduce (Aquí inicia)
-    try 
-    {
-      // Hacemos una solicitud GET a la API para obtener el perfil del usuario.
-      const res = await axios.get("/api/profile");
-      setUsername(res.data.username);
-    } 
-    catch (error) 
-    {
-      console.error("Error al obtener el perfil del usuario:", error);
-      setUsername(0);
-    }
-    // Map-Reduce (Termina Aquí)
-  };
-```
-
-## **En verify.js**
-
-* Comentarios descriptivos
-```js
-        // Componente Modal para confirmar acciones
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onRequestClose}
-            contentLabel="Confirmación"
-            ariaHideApp={false}
-            className="modal-dialog"
-        >
-```
-* No se puso comentarios no necesarios
-
-
-# **------------------------------- LAB 11:  Principios SOLID -------------------------------**
-> Alumno: Nelzon Jorge Apaza Apaza
-> Curso Ingeniería de software
-
-Implementación de principios SOLID:
-
-## **En resultado.js**
-He separado la representación de la tabla en un nuevo componente llamado ResultadoTable. De esta manera, el componente Resultado ahora se enfoca únicamente en obtener los resultados y manejar su visualización, mientras que la tabla se representa en un componente separado. Esto cumple con el principio de Responsabilidad Única.
-```js
-// Archivo Resultado.js
-import React, { useEffect, useState } from "react";
-import Layout from "../componentes/layout";
-import resultadoEleccion from "../data/repositorio/resultadoEleccion";
-
-// Nuevo componente para la tabla de resultados
-function ResultadoTable({ resultado }) {
-  return (
-    <table className="table mt-4">
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Partido</th>
-          <th>Presidente</th>
-          <th>Nro_Votos</th>
-          <th>Logo</th>
-        </tr>
-      </thead>
-      <tbody>
-        {resultado.map((e, index) => (
-          <tr key={e.id_partido}>
-            <td>{e.id_partido}</td>
-            <td>{e.nombre_partido}</td>
-            <td>{e.nombre + " " + e.apellido}</td>
-            <td>{e.nro_votos}</td>
-            <td>
-              <img
-                src={"/partidos/" + e.nombre_partido + ".png"}
-                alt={"Cargando"}
-                style={{ width: "100px", height: "100px" }}
-              />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-export default function Resultado() {
-  const [resultado, setResultado] = useState([]);
-
-  useEffect(() => {
-    getResultados();
-  }, []);
-
-  const getResultados = async () => {
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
     try {
-      const res = await resultadoEleccion.getResultados();
-      console.log(res.data);
-      setResultado(res.data[0]);
+      // Llamada al servicio ElectorService para obtener los partidos políticos
+      return await ElectorService.getPoliticalParty();
     } catch (error) {
-      console.error("Error al obtener resultados de la base de datos:", error);
-      setResultado([]);
-    }
-  };
-
-  return (
-    <Layout pagina="Resultado">
-      {resultado.length > 0 ? (
-        <ResultadoTable resultado={resultado} />
-      ) : (
-        <div>Vacio</div>
-      )}
-    </Layout>
-  );
-}
-
-```
-
-## **En resultadoEleccion.js**
-
-* He separado las responsabilidades en dos clases diferentes: resultadoService se encarga de obtener los resultados de la elección, y userService se encarga de obtener información del usuario. Luego, la clase resultadoEleccion utiliza estas dos clases para manejar las operaciones relacionadas con los resultados de la elección y la obtención de información del usuario.
-
-Con esta reestructuración, hemos aplicado el principio de Responsabilidad Única (SRP) al dividir las responsabilidades en clases diferentes y, como beneficio adicional, hemos mejorado la cohesión y la modularidad del código. Cada clase tiene una única responsabilidad y se puede modificar, extender o reutilizar de manera más sencilla. Además, si hay cambios en el manejo de resultados o usuarios, afectarán solo a sus respectivas clases sin afectar a las otras partes del código.
-
-```js
-import resultadoService from './resultadoService';
-import userService from './userService';
-
-class resultadoEleccion {
-  static async getResultados() {
-    return resultadoService.getResultados();
-  }
-
-  static async getUserById(id) {
-    return userService.getUserById(id);
-  }
-}
-
-export default resultadoEleccion;
-
-```
-### creación de "resultadoService.js":
-```js
-import axios from 'axios';
-
-class resultadoService {
-  static async getResultados() 
-  {
-    try 
-    {
-      const response = await axios.get('/api/services/resultado');
-      return response;
-    } 
-    catch (error) 
-    {
-      console.error('Error al obtener resultados de la base de datos:', error);
-      throw error;
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
   }
 }
 
-export default resultadoService;
-
 ```
-### creación de "userService.js":
+## Principios SOLID
+### 1. Single Responsibility Principle (SRP)
 
-```js
-import axios from 'axios';
+La clase VoteElector contiene dos funciones bien definidas y especializadas. La primera función, sendVote(vote), se encarga de enviar un voto utilizando el servicio ElectorService para su almacenamiento y maneja los posibles errores relacionados con esta operación. La segunda función, getPoliticalParty(), se encarga de obtener los partidos políticos utilizando el mismo servicio y maneja la lógica de consulta y los errores que puedan surgir. Ambas funciones cumplen con el principio de Single Responsibility (SRP) al tener una única responsabilidad y realizar una tarea específica.
 
-class userService {
-  static async getUserById(id) 
-  {
-    try 
-    {
-      const response = await axios.get(`/api/users/${id}`);
-      return response.data;
-    } 
-    catch (error) 
-    {
-      console.error(`Error al obtener el usuario con ID ${id}:`, error);
-      throw error;
-    }
-  }
-}
-
-export default userService;
-
-```
-
-## **En resultadoEleccion.js**  
-
-### creación de "profileService.js":
-
-* Aplicación del principio de Responsabilidad Única (SRP): La función getProfile se encargaba tanto de hacer una solicitud HTTP para obtener el perfil del usuario como de actualizar el estado del componente con el nombre de usuario. Para separar estas responsabilidades, realicé una nueva clase profileService que maneje la obtención del perfil del usuario.
-```js
-import axios from "axios";
-
-class profileService {
-  static async getProfile() {
-    try 
-    {
-      // Hacemos una solicitud GET a la API para obtener el perfil del usuario.
-      const res = await axios.get("/api/profile");
-      return res.data.username;
+```javascript
+class VoteElector {
+  // Función para enviar un voto
+  static async sendVote(vote) {
+    try {
+      // Llamada al servicio ElectorService para guardar el voto
+      return await ElectorService.saveVote(vote);
     } catch (error) {
-      console.error("Error al obtener el perfil del usuario:", error);
-      return 0;
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
+    }
+  }
+
+  // Función para obtener los partidos políticos
+  static async getPoliticalParty() {
+    try {
+      // Llamada al servicio ElectorService para obtener los partidos políticos
+      return await ElectorService.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al servicio
     }
   }
 }
 
-export default profileService;
-
 ```
+### 2. Open/Closed Principle (OCP)
+“Deberías ser capaz de extender el comportamiento de una clase, sin modificarla”. En otras palabras: las clases que usas deberían estar abiertas para poder extenderse y cerradas para modificarse.
 
-### creación de "httpService.js":
+El constructor de la clase ElectorService se utiliza para recibir un parámetro llamado repository, que representa el repositorio de datos utilizado para interactuar con el almacenamiento. Al asignar este parámetro a la propiedad this.repository, la clase puede acceder al repositorio y realizar operaciones dentro de sus métodos, lo que la hace flexible para trabajar con diferentes tipos de repositorios sin modificar su código interno. 
 
-* Aplicación del principio de Inversión de Dependencias (DIP): En el código anterior, el componente Layout dependía directamente de axios para hacer las solicitudes HTTP. Para aplicar el principio de Inversión de Dependencias, realicé una abstracción en forma de una interfaz httpService que definirá los métodos de solicitud.
+```javascript
+import ElectorRepository from "../../data/repository/ElectorRepository"; // Ruta relativa para ElectorRepository
+import Vote from "../../domain/models/Vote"; // Ruta relativa para Vote model
 
-```js
-import axios from "axios";
-
-class httpService {
-  static async get(url) {
-    return await axios.get(url);
+class ElectorService {
+  // Constructor de la clase ElectorService.
+  // El constructor se ejecuta al crear una instancia de ElectorService.
+  // Recibe un parámetro "repository" que representa el repositorio de datos a utilizar.
+  constructor(repository) {
+    // Asigna el repositorio recibido como parámetro a la propiedad "repository".
+    this.repository = repository;
   }
 
-  static async post(url) {
-    return await axios.post(url);
+  // Función para guardar un voto.
+  // Recibe el voto a guardar como parámetro.
+  async saveVote(vote) {
+    // Creamos una instancia del modelo Vote con los datos recibidos.
+    const instanceVote = new Vote(vote.idElector, vote.idPoliticalParty, vote.date);
+
+    try {
+      // Llamada al repositorio ElectorRepository para guardar el voto.
+      // Utiliza el repositorio asignado en el constructor para realizar la operación.
+      return await this.repository.saveVote(instanceVote);
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio.
+    }
+  }
+
+  // Función para obtener los partidos políticos.
+  async getPoliticalParty() {
+    try {
+      // Llamada al repositorio ElectorRepository para obtener los partidos políticos.
+      // Utiliza el repositorio asignado en el constructor para realizar la operación.
+      return await this.repository.getPoliticalParty();
+    } catch (error) {
+      return error; // Devuelve el error en caso de fallo en la llamada al repositorio.
+    }
   }
 }
 
-export default httpService;
-
-```
-He aplicado los principios SOLID de Responsabilidad Única (SRP) e Inversión de Dependencias (DIP) al código. La clase profileService se encarga exclusivamente de obtener el perfil del usuario, mientras que la clase httpService proporciona una abstracción para realizar solicitudes HTTP. Esto mejora la cohesión y la modularidad del código y facilita su extensión y mantenimiento en el futuro.
-
-## **En verify.js**  
-
-* Principio de Responsabilidad Única (SRP): En el código anterior, el componente verify tiene la responsabilidad tanto de la presentación (mostrar el modal) como de la lógica de confirmación (manejar la acción cuando se confirma). Dividí estas responsabilidades en dos componentes diferentes: verifyModal para la presentación y confirmDialog para la lógica de confirmación.
-
-### creación de "confirmDialog.js":
-
-```js
-import React from 'react';
-
-const confirmDialog = ({ onConfirm, onCancel, text }) => {
-  return (
-    <div>
-      <h5>{text}</h5>
-      <button onClick={onConfirm}>Sí</button>
-      <button onClick={onCancel}>No</button>
-    </div>
-  );
-};
-
-export default confirmDialog;
-
-```
-
-### creación de "verifyModal.js":
-
-```js
-import React from 'react';
-import Modal from 'react-modal';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-const verifyModal = ({ isOpen, onRequestClose, children }) => {
-  return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      contentLabel="Confirmación"
-      ariaHideApp={false}
-      className="modal-dialog"
-    >
-      <div className="modal-content container">
-        {children}
-      </div>
-    </Modal>
-  );
-};
-
-export default verifyModal;
-
-```
-
-### **En verify.js** 
-* Ahora, el componente verify se compone de verifyModal y confirmDialog, lo que nos permite separar la presentación del modal y la lógica de confirmación en componentes diferentes. Esto mejora la cohesión y la modularidad del código y facilita la comprensión y el mantenimiento en el futuro. Además, también facilita la reutilización de estos componentes en otros lugares de la aplicación, lo que fomenta la eficiencia del desarrollo.
-```js
-import React, { useState } from 'react';
-import verifyModal from './verifyModal';
-import confirmDialog from './confirmDialog';
-
-const verify = ({ isOpen, onRequestClose, onConfirm, text }) => {
-  return (
-    <verifyModal isOpen={isOpen} onRequestClose={onRequestClose}>
-      <confirmDialog onConfirm={onConfirm} onCancel={onRequestClose} text={text} />
-    </verifyModal>
-  );
-};
-
-export default verify;
-
+export default ElectorService;
 ```
