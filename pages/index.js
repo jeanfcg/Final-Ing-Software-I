@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import axios from 'axios';
+import styles from '../styles/Home.module.css';
 
 // Single Responsibility Principle: Crear el componente CandidateRow
 const CandidateRow = ({ candidate }) => {
