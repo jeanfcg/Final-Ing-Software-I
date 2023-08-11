@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/globals.css';
 
 import Modal from "react-modal";
 

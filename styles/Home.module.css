@@ -1,0 +1,7 @@
+.customContainer {
+    /* Estilos de Bootstrap */
+    padding: 3rem !important;
+    margin: 3rem 0 !important;
+    background-color: #343a40 !important;
+    color: white !important;
+}

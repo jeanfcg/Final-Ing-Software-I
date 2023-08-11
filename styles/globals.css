@@ -1,3 +1,6 @@
+body{
+    background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+}
 .home-link {
     font-size: 1.5rem;
     color: #007bff;
