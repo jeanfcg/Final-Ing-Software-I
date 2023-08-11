@@ -5,3 +5,20 @@
     background-color: #343a40 !important;
     color: white !important;
 }
+/* styles.module.css */
+.link-dark {
+    color: black;
+}
+
+.link-offset-2 {
+    margin-left: 2rem;
+}
+
+.link-underline-opacity-25 {
+    text-decoration: underline;
+    opacity: 0.25;
+}
+
+.link-underline-opacity-100-hover:hover {
+    opacity: 1;
+}
